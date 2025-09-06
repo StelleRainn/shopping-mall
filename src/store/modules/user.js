@@ -1,21 +1,14 @@
-import { setInfo } from '@/utils/storage'
+import { setInfo, getInfo } from '@/utils/storage'
 
 const state = {
-  userInfo: {
-    userId: '',
-    token: ''
-  }
+  // 改为由本地存储获取
+  // 避免每次刷新后 vuex 数据丢失 → vuex 持久化管理
+  userInfo: getInfo()
 }
 
 const mutations = {
   setUserInfo (state, payload) {
-    // state.userId = payload.userId
-    // state.token = payload.token
-    // console.log(payload)
-    // console.log(state.userId, state.token)
-    state.userInfo = payload
-    console.log(state.userInfo)
-    setInfo(state.userInfo)
+    setInfo(payload)
   }
 }
 const actions = {}

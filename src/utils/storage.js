@@ -1,3 +1,4 @@
+// 本模块封装了关于 vuex 持久化的相关功能
 const INFO_KEY = 'StelleRainn-shopping-info'
 
 const getInfo = () => {

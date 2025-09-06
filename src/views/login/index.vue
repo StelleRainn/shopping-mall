@@ -111,6 +111,8 @@ export default {
 
       const res = await userLogin(this.telephone, this.smsCode)
       this.$toast('登录成功')
+
+      // res.data.data 为一个对象，包含userId和token，传递该对象作为payload
       this.$store.commit('user/setUserInfo', res.data.data)
       await this.$router.push({ path: '/home' })
     }
