@@ -1,5 +1,5 @@
 <template>
-    <div class="goods-item" @click="$router.push(`/prodetail/${item.goods_id}`)">
+    <div class="goods-item" @click="$router.push(`/pro-detail/${item.goods_id}`)">
         <div class="left">
             <img :src="item.goods_image" alt="" />
         </div>
@@ -17,6 +17,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'GoodsItem',
   props: {
