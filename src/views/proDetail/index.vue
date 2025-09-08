@@ -73,18 +73,52 @@
         <van-icon name="shopping-cart-o" />
         <span>购物车</span>
       </div>
-      <div class="btn-add">加入购物车</div>
-      <div class="btn-buy">立刻购买</div>
+      <div class="btn-add" @click="addToCart">加入购物车</div>
+      <div class="btn-buy" @click="purchase">立刻购买</div>
     </div>
+
+    <!-- 加入购物车或立即购买的弹层 -->
+  <van-action-sheet v-model="showPannel" :title="mode === 'cart' ? '加入购物车' : '立刻购买'">
+    <div class="product">
+      <div class="product-title">
+        <div class="left">
+          <img :src="detail.goods_image" alt="">
+        </div>
+        <div class="right">
+          <div class="price">
+            <span>¥</span>
+            <span class="nowprice">{{ detail.goods_price_min }}</span>
+          </div>
+          <div class="count">
+            <span>库存</span>
+            <span>{{ detail.stock_total }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="num-box">
+        <span>数量</span>
+        <CountBox :value="consumeCount" @input="changeConsumeCount"></CountBox>
+      </div>
+      <div class="showbtn" v-if="detail.stock_total">
+        <div class="btn" v-if="true">加入购物车</div>
+        <div class="btn now" v-else>立刻购买</div>
+      </div>
+      <div class="btn-none" v-else>该商品已抢完</div>
+    </div>
+  </van-action-sheet>
   </div>
 </template>
 
 <script>
 import { getProComments, getProDetail } from '@/api/product'
 import defaultAvatar from '@/assets/default-avatar.png'
+import CountBox from '@/components/CountBox.vue'
 
 export default {
   name: 'ProDetailIndex',
+  components: {
+    CountBox
+  },
   data () {
     return {
       images: [
@@ -97,7 +131,12 @@ export default {
       // 评论相关
       commentList: [],
       commentCount: 0,
-      defaultAvatar
+      defaultAvatar,
+      // 弹层相关
+      showPannel: false,
+      mode: 'cart',
+      consumeCount: 4
+
     }
   },
   computed: {
@@ -115,7 +154,7 @@ export default {
     async getGoodsDetail () {
       const res = await getProDetail(this.goodsId)
       this.detail = res.data.data.detail
-      // console.log(this.detail)
+      console.log(this.detail)
     },
 
     // 根据本商品的 goodsId 发出请求，获取本商品的评论
@@ -123,6 +162,23 @@ export default {
       const res = await getProComments(this.goodsId, 3)
       this.commentList = res.data.data.list
       this.commentCount = res.data.data.total
+    },
+
+    // 加入购物车
+    addToCart () {
+      this.mode = 'cart'
+      this.showPannel = true
+    },
+
+    // 立刻购买
+    purchase () {
+      this.mode = 'purchase'
+      this.showPannel = true
+    },
+
+    // 修改 加入购物车/立即购买 弹框中的商品数量（子传父）
+    changeConsumeCount (val) {
+      this.consumeCount = val
     }
   },
   // 立即请求
@@ -278,5 +334,53 @@ export default {
 
 .tips {
   padding: 10px;
+}
+
+.product {
+  .product-title {
+    display: flex;
+    .left {
+      img {
+        width: 90px;
+        height: 90px;
+      }
+      margin: 10px;
+    }
+    .right {
+      flex: 1;
+      padding: 10px;
+      .price {
+        font-size: 14px;
+        color: #fe560a;
+        .nowprice {
+          font-size: 24px;
+          margin: 0 5px;
+        }
+      }
+    }
+  }
+
+  .num-box {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    align-items: center;
+  }
+
+  .btn, .btn-none {
+    height: 40px;
+    line-height: 40px;
+    margin: 20px;
+    border-radius: 20px;
+    text-align: center;
+    color: rgb(255, 255, 255);
+    background-color: rgb(255, 148, 2);
+  }
+  .btn.now {
+    background-color: #fe5630;
+  }
+  .btn-none {
+    background-color: #cccccc;
+  }
 }
 </style>
