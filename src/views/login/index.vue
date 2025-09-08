@@ -114,7 +114,13 @@ export default {
 
       // res.data.data 为一个对象，包含userId和token，传递该对象作为payload
       this.$store.commit('user/setUserInfo', res.data.data)
-      await this.$router.push({ path: '/home' })
+
+      // await this.$router.push({ path: '/home' })
+      // 更新 → 若用户从其他页面因需要登录跳转而来，在成功登录后应返回对应页面
+      const destination = this.$route.query.backUrl || '/home'
+      this.$router.replace({
+        path: destination
+      })
     }
   },
   // 清除页面中的定时器

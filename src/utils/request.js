@@ -1,11 +1,15 @@
 import axios from 'axios'
 import { Toast } from 'vant'
+import store from '@/store'
 
 // 自定义axios实例
 const instance = axios.create({
   baseURL: 'http://smart-shop.itheima.net/index.php?s=/api',
   timeout: 5000,
-  headers: { platform: 'H5' }
+  headers: {
+    platform: 'H5'
+  }
+
 })
 
 // 自定义请求/响应拦截器
@@ -21,6 +25,10 @@ instance.interceptors.request.use(function (config) {
     loadingType: 'spinner', // 加载样式
     duration: 0 // 持续时间，设置为0表示不自动消失
   })
+
+  // 补充一个header参数（不能在create中添加）
+  config.headers['Access-Token'] = store.state.user.userInfo.token
+
   return config
 }, function (error) {
   // 对请求错误做些什么

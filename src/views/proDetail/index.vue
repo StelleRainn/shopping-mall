@@ -65,11 +65,12 @@
 
     <!-- 底部 -->
     <div class="footer">
-      <div class="icon-home">
+      <div class="icon-home" @click="$router.push('/home')">
         <van-icon name="wap-home-o" />
-        <span>首页</span>
+        <span >首页</span>
       </div>
-      <div class="icon-cart">
+      <div class="icon-cart" @click="$router.push('/cart')">
+        <span v-if="cartTotal > 0" class="num">{{ cartTotal }}</span>
         <van-icon name="shopping-cart-o" />
         <span>购物车</span>
       </div>
@@ -100,7 +101,7 @@
         <CountBox :value="consumeCount" @input="changeConsumeCount"></CountBox>
       </div>
       <div class="showbtn" v-if="detail.stock_total">
-        <div class="btn" v-if="true">加入购物车</div>
+        <div class="btn" v-if="true" @click="confirmAddToCart">加入购物车</div>
         <div class="btn now" v-else>立刻购买</div>
       </div>
       <div class="btn-none" v-else>该商品已抢完</div>
@@ -113,6 +114,7 @@
 import { getProComments, getProDetail } from '@/api/product'
 import defaultAvatar from '@/assets/default-avatar.png'
 import CountBox from '@/components/CountBox.vue'
+import { addToCartApi } from '@/api/cart'
 
 export default {
   name: 'ProDetailIndex',
@@ -132,10 +134,11 @@ export default {
       commentList: [],
       commentCount: 0,
       defaultAvatar,
-      // 弹层相关
+      // 弹层与购物车相关
       showPannel: false,
       mode: 'cart',
-      consumeCount: 4
+      consumeCount: 4,
+      cartTotal: 0
 
     }
   },
@@ -154,7 +157,7 @@ export default {
     async getGoodsDetail () {
       const res = await getProDetail(this.goodsId)
       this.detail = res.data.data.detail
-      console.log(this.detail)
+      // console.log(this.detail)
     },
 
     // 根据本商品的 goodsId 发出请求，获取本商品的评论
@@ -176,9 +179,43 @@ export default {
       this.showPannel = true
     },
 
-    // 修改 加入购物车/立即购买 弹框中的商品数量（子传父）
+    // 修改 加入购物车/立即购买 数字框中的商品数量（子传父）
     changeConsumeCount (val) {
       this.consumeCount = val
+    },
+
+    // 加入购物车
+    async confirmAddToCart () {
+      const token = this.$store.state.user.userInfo.token
+      if (token) {
+        // console.log(`token{${token}}request permitted`)
+        const res = await addToCartApi(this.goodsId, this.consumeCount, this.detail.skuList[0].goods_sku_id)
+        this.cartTotal = res.data.data.cartTotal
+        this.$toast(res.data.message)
+        this.showPannel = false
+      } else {
+        // console.log('no token, logging in...')
+        this.$dialog.confirm({
+          title: '温馨提示',
+          message: '需要先登录才能继续哦',
+          confirmButtonText: '去登录',
+          cancelButtonText: '再逛逛'
+        })
+          .then(() => {
+            // replace 方法能够销毁当下页面，相比push方法，避免了用户返回逻辑不合理的情况
+            this.$router.replace({
+              path: '/login',
+              // 传入一个backUrl参数，实现在登录后返回当前页面（需要在login页面修改相关逻辑）
+              // fullPath可以提供当前的路径，包含参数
+              query: {
+                backUrl: this.$route.fullPath
+              }
+            })
+          })
+          .catch(() => {
+            this.$dialog.close()
+          })
+      }
     }
   },
   // 立即请求
@@ -381,6 +418,23 @@ export default {
   }
   .btn-none {
     background-color: #cccccc;
+  }
+}
+
+.footer .icon-cart {
+  position: relative;
+  padding: 0 6px;
+  .num {
+    z-index: 999;
+    position: absolute;
+    top: -2px;
+    right: 0;
+    min-width: 16px;
+    padding: 0 4px;
+    color: #fff;
+    text-align: center;
+    background-color: #ee0a24;
+    border-radius: 50%;
   }
 }
 </style>

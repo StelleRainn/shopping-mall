@@ -8,6 +8,7 @@ const state = {
 
 const mutations = {
   setUserInfo (state, payload) {
+    state.userInfo = payload // 同步更新当前userInfo
     setInfo(payload)
   }
 }
