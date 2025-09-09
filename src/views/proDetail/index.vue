@@ -101,8 +101,8 @@
         <CountBox :value="consumeCount" @input="changeConsumeCount"></CountBox>
       </div>
       <div class="showbtn" v-if="detail.stock_total">
-        <div class="btn" v-if="true" @click="confirmAddToCart">加入购物车</div>
-        <div class="btn now" v-else>立刻购买</div>
+        <div class="btn" v-if="mode === 'cart'" @click="confirmAddToCart">加入购物车</div>
+        <div class="btn now" v-else @click="goBuyNow">立刻购买</div>
       </div>
       <div class="btn-none" v-else>该商品已抢完</div>
     </div>
@@ -115,12 +115,14 @@ import { getProComments, getProDetail } from '@/api/product'
 import defaultAvatar from '@/assets/default-avatar.png'
 import CountBox from '@/components/CountBox.vue'
 import { addToCartApi } from '@/api/cart'
+import checkTokenStatus from '@/mixins/checkTokenStatus'
 
 export default {
   name: 'ProDetailIndex',
   components: {
     CountBox
   },
+  mixins: [checkTokenStatus],
   data () {
     return {
       images: [
@@ -186,36 +188,30 @@ export default {
 
     // 加入购物车
     async confirmAddToCart () {
-      const token = this.$store.state.user.userInfo.token
-      if (token) {
-        // console.log(`token{${token}}request permitted`)
-        const res = await addToCartApi(this.goodsId, this.consumeCount, this.detail.skuList[0].goods_sku_id)
-        this.cartTotal = res.data.data.cartTotal
-        this.$toast(res.data.message)
-        this.showPannel = false
-      } else {
-        // console.log('no token, logging in...')
-        this.$dialog.confirm({
-          title: '温馨提示',
-          message: '需要先登录才能继续哦',
-          confirmButtonText: '去登录',
-          cancelButtonText: '再逛逛'
-        })
-          .then(() => {
-            // replace 方法能够销毁当下页面，相比push方法，避免了用户返回逻辑不合理的情况
-            this.$router.replace({
-              path: '/login',
-              // 传入一个backUrl参数，实现在登录后返回当前页面（需要在login页面修改相关逻辑）
-              // fullPath可以提供当前的路径，包含参数
-              query: {
-                backUrl: this.$route.fullPath
-              }
-            })
-          })
-          .catch(() => {
-            this.$dialog.close()
-          })
+      // 检查 token 状态的方法优化为使用 mixin 混入（因为后续点击“立即购买”也需要检查token状态）
+      if (this.checkTokenStatus()) {
+        return
       }
+      const res = await addToCartApi(this.goodsId, this.consumeCount, this.detail.skuList[0].goods_sku_id)
+      this.cartTotal = res.data.data.cartTotal
+      this.$toast(res.data.message)
+      this.showPannel = false
+    },
+
+    // 点击“立即购买”，跳转到订单页
+    goBuyNow () {
+      if (this.checkTokenStatus()) {
+        return
+      }
+      this.$router.push({
+        path: '/pay',
+        query: {
+          mode: 'buyNow',
+          goodsId: this.goodsId,
+          goodsSkuId: this.detail.skuList[0].goods_sku_id,
+          goodsNum: this.consumeCount
+        }
+      })
     }
   },
   // 立即请求

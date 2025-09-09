@@ -43,7 +43,7 @@
             <span>¥ <i class="totalPrice">{{ selPriceInTotal }}</i></span>
           </div>
           <!-- 动态类名 disabled：如果没有选中任何一项，不应当能够结算 -->
-          <div v-if="!isEdit" class="goPay" :class="{ disabled: selCount === 0}">结算({{ selCount }})</div>
+          <div v-if="!isEdit" @click="goPay" class="goPay" :class="{ disabled: selCount === 0}">结算({{ selCount }})</div>
           <div v-else @click="handleDelete" class="delete" :class="{ disabled: selCount === 0}">删除</div>
         </div>
       </div>
@@ -82,7 +82,6 @@ export default {
   },
   created () {
     if (this.isLogin) {
-      console.log(this.isLogin)
       this.$store.dispatch('cart/fetchCartList')
     }
   },
@@ -94,7 +93,6 @@ export default {
       this.$store.commit('cart/toggleAllChecked', !this.isAllChecked)
     },
     updateCount (value, goodsId, goodsSkuId) {
-      // console.log(value, goodsId, goodsSkuId)
       this.$store.dispatch('cart/updateCount', {
         goodsId,
         goodsNum: value,
@@ -104,6 +102,15 @@ export default {
     async handleDelete () {
       await this.$store.dispatch('cart/delSelItem')
       this.isEdit = false
+    },
+    goPay () {
+      this.$router.push({
+        path: '/pay',
+        query: {
+          mode: 'cart',
+          cartIds: this.selCartList.map(item => item.id).join(',')
+        }
+      })
     }
   },
   watch: {
