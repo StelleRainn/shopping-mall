@@ -137,7 +137,7 @@ export default {
       // 弹层与购物车相关
       showPannel: false,
       mode: 'cart',
-      consumeCount: 4,
+      consumeCount: 1,
       cartTotal: 0
 
     }

@@ -1,4 +1,5 @@
-import { getCartListApi, updateCountApi } from '@/api/cart'
+import { delSelItemApi, getCartListApi, updateCountApi } from '@/api/cart'
+import { Toast } from 'vant'
 
 export default {
   namespaced: true,
@@ -34,6 +35,7 @@ export default {
     }
   },
   actions: {
+    // 获取购物车列表
     async fetchCartList (context) {
       const res = await getCartListApi()
       const cartList = res.data.data.list
@@ -53,6 +55,16 @@ export default {
       // 这一步更新本地
       // 由于返回结果不带对本goodsId的信息，只返回商品总数cartTotal，故暂时用goodsNum模拟后台返回的有效新数据
       context.commit('syncUpdatedCount', { goodsId, goodsNum })
+    },
+
+    // 删除购物车商品
+    async delSelItem (context) {
+      // 通过 context，调用 getters 中的方法。包括后面还可以调用 actions。
+      const cartIds = context.getters.selCartList.map(item => item.id)
+      await delSelItemApi(cartIds)
+      Toast('删除成功')
+      // 删除后重新拉取购物车数据
+      context.dispatch('fetchCartList')
     }
   },
   getters: {

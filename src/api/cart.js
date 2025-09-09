@@ -19,3 +19,9 @@ export const updateCountApi = (goodsId, goodsNum, goodsSkuId) => {
     goodsSkuId
   })
 }
+
+export const delSelItemApi = (cartIds) => {
+  return request.post('cart/clear', {
+    cartIds
+  })
+}
