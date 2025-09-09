@@ -6,7 +6,7 @@ import Vue from 'vue'
 // import Vant from 'vant'
 // Vue.use(Vant)
 // 按需注册
-import { Checkbox, Dialog, ActionSheet, Icon, SwipeItem, Swipe, Search, Button, NavBar, Rate, Switch, Tabbar, TabbarItem, Toast, Grid, GridItem } from 'vant'
+import { Tabs, Tab, Checkbox, Dialog, ActionSheet, Icon, SwipeItem, Swipe, Search, Button, NavBar, Rate, Switch, Tabbar, TabbarItem, Toast, Grid, GridItem } from 'vant'
 
 Vue.use(Button)
 Vue.use(Switch)
@@ -21,3 +21,4 @@ Vue.use(Icon)
 Vue.use(ActionSheet)
 Vue.use(Dialog)
 Vue.use(Checkbox)
+Vue.use(Tabs).use(Tab)

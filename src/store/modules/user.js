@@ -12,7 +12,14 @@ const mutations = {
     setInfo(payload)
   }
 }
-const actions = {}
+const actions = {
+  logoutActions (context) {
+    // 清空个人信息
+    context.commit('setUserInfo', [])
+    // 清空购物车(跨模块调用，需要开启{root:true})
+    context.commit('cart/updateCartList', {}, { root: true })
+  }
+}
 const getters = {}
 
 export default {

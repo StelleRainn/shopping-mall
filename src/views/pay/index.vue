@@ -198,7 +198,7 @@ export default {
       }
 
       this.$toast.success('支付成功')
-      this.$router.replace('/order')
+      this.$router.replace('/myorder')
     }
   }
 }

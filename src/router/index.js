@@ -1,18 +1,23 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '@/views/login/index.vue'
-import Layout from '@/views/layout/index.vue'
+
 import Search from '@/views/search/index.vue'
 import List from '@/views/search/list.vue'
 import ProDetail from '@/views/proDetail/index.vue'
 import Pay from '@/views/pay/index.vue'
 import Order from '@/views/order/index.vue'
-import Home from '@/views/layout/home.vue'
-import category from '@/views/layout/category.vue'
-import Cart from '@/views/layout/cart.vue'
-import User from '@/views/layout/user.vue'
 
 import store from '@/store/'
+
+// 路由懒加载
+// 以下为默认加载，而上方的import则为按需加载
+// 改造为异步组件
+const Layout = () => import('@/views/layout/index.vue')
+const Home = () => import('@/views/layout/home.vue')
+const category = () => import('@/views/layout/category.vue')
+const Cart = () => import('@/views/layout/cart.vue')
+const User = () => import('@/views/layout/user.vue')
 
 Vue.use(VueRouter)
 
@@ -37,7 +42,7 @@ const routes = [
   // 动态路由传参, id用于确定是哪个商品
   { path: '/pro-detail/:id', component: ProDetail },
   { path: '/pay', component: Pay },
-  { path: '/order', component: Order }
+  { path: '/myorder', component: Order }
 
 ]
 
