@@ -39,15 +39,16 @@ export default {
   },
   methods: {
     goSearch (searchItem) {
+      // 添加历史记录
       // 数组 indexOf 方法：返回数组中指定元素的下标，若无则返回-1
       const index = this.history.indexOf(searchItem)
-      if (index !== -1) {
+      if (index !== -1) { // 如果有，就去重，然后再添加到列表中
         this.history.splice(index, 1)
       }
       this.history.unshift(searchItem)
       setHistory(this.history)
 
-      // path 路径跳转与传参
+      // 搜索后，跳转到搜索结果页面
       this.$router.push(`./search-list?search=${searchItem}`)
     },
     deleteHistory () {

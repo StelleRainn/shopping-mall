@@ -159,7 +159,6 @@ export default {
     async getGoodsDetail () {
       const res = await getProDetail(this.goodsId)
       this.detail = res.data.data.detail
-      // console.log(this.detail)
     },
 
     // 根据本商品的 goodsId 发出请求，获取本商品的评论

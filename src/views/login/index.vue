@@ -36,7 +36,7 @@
 
 // 按需导入
 import { getSMSCode, getValidCode, userLogin } from '@/api/login'
-import { Toast } from 'vant'
+// import { Toast } from 'vant'
 
 export default {
   name: 'LoginPage',
@@ -66,8 +66,8 @@ export default {
       const { data: { base64, key } } = res.data
       this.validCodeKey = key // 唯一图片标识
       this.validCodeImg = base64 // 图片地址
-      Toast('按需导入，四处可用')
-      this.$toast('挂载到了Vue的原型链上')
+      // Toast('按需导入，四处可用')
+      // this.$toast('挂载到了Vue的原型链上')
     },
 
     // 对手机号和图片验证码进行校验
@@ -88,7 +88,7 @@ export default {
       if (!this.validationFn()) return
 
       // 确保没有其他定时器干扰（防止连点）以及处于“可获取验证码状态”（两个标记时间相等）
-      if (!this.time && this.remainingTime === this.waitTime) {
+      if (!this.timer && this.remainingTime === this.waitTime) {
         // 此 getSMSCode 方法来自 @/api/login，注意区分
         await getSMSCode(this.validCode, this.validCodeKey, this.telephone)
         this.$toast.success('短信验证码发送成功')
